@@ -27,7 +27,7 @@ pipeline {
         stage ('Building Docker Image') {
             steps {
                 sh '''
-                    docker build -t ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG} .
+                    docker build -t ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG} -f ../Dockerfile .
                 '''
             }
         }
@@ -59,6 +59,14 @@ pipeline {
         stage ('Finishing Build Pipeline') {
             steps {
                 echo 'Build pipeline finished'
+            }
+        }
+
+        stage('Trigger Deploy') {
+            steps {
+                build job: 'Roberta-Deploy', wait: false, parameters: [
+                    string(name: 'ROBERTA_IMAGE_URL', value: "deepanshurawat6/roberta-bot:latest")
+                ]
             }
         }
     }
